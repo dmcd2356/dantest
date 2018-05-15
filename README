@@ -1,0 +1,42 @@
+This is a collection of programs for ferforming unit tests for danalyzer.
+
+-------------------------------------------------------------------------------------------------
+Danparse - a program for parsing the debug output of DanTest to determine if the test passed or failed
+
+    Usage:
+        java -jar Danparse.jar [options] <raw_file> <out_file>
+
+    Where: <raw_file> = name of the output file to save the danalyzed test debug messages into
+           <out_file> = name of the output file to create containing the PASS or FAIL status
+    options:
+           -t  = display state change info for debugging test
+           -T  = display state and parsing info for debugging test
+
+-------------------------------------------------------------------------------------------------
+SimpleTest - a program for performing the specific tests of a danalyzed file.
+    Debug message output can be captured to verify whether the commands pass or fail the tests.
+
+    Usage:
+        java -jar SimpleTest.jar  <test_number>
+
+    Where: <test_number> = the test number for the specified test
+
+-------------------------------------------------------------------------------------------------
+makeall.sh - bash script for building all pieces of the dantester
+
+runtest.sh - bash script for running the tests
+
+    Usage:
+        runtest.sh [options] <program_name> <args>
+
+    Where: <program_name> = name of the program to run (e.g. SimpleTest)
+           <args> = the argument list to pass to the specified test program
+    options:
+           -t  = display state change info for debugging test
+           -T  = display state and parsing info for debugging test
+           -p  = force rebuild of Danparse prior to running
+           -f  = force rebuild of program and re-instrument prior to running
+
+    use -p if Danparse source has changed
+    use -f if test program source has changed or danalyzer has been rebuilt
+

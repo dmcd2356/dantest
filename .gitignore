@@ -1,7 +1,7 @@
 build/
 dist/
 nbproject/private/
-testoutput.txt
+testresult.txt
 testraw.txt
 classlist.txt
 danfig

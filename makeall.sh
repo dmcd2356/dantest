@@ -2,7 +2,7 @@
 
 # assumes you are running this script from the DanTester main directory that contains folders
 # for each of the sub-projects.
-# - The danalyzer.jar file is assumed to be located at ${DANPATH}/dist
+# - The danalyzer.jar file is assumed to be located at ${DANALYZER_REPO}/dist
 #
 # these options help catch errors.
 # 'nounset' throws an error if a parameter being used is undefined.
@@ -10,14 +10,17 @@
 set -o nounset
 #set -o errexit
 
-#DANPATH="/mnt/sdb1/Projects/ISSTAC/repo/danalyzer/"
-DANPATH="/home/dmcd2356/Projects/ISSTAC/repo/danalyzer/"
+# this just makes it easier to change users if the repos are organized the same as below.
+HOME="/home/dse"
+
+# this is the location of the danalyzer repo
+DANALYZER_REPO="${HOME}/Projects/isstac/danalyzer/"
 
 function build
 {
     echo "- building ${1}"
     if [[ ${1} == "danalyzer" ]]; then
-        cd "${DANPATH}"
+        cd "${DANALYZER_REPO}"
     else
         cd "${1}"
     fi
@@ -35,8 +38,8 @@ function build
 CURDIR=$(pwd 2>&1)
 
 # verify danalyzer path
-if [ ! -d "${DANPATH}" ]; then
-    echo "danalyzer path invalid: ${DANPATH}"
+if [ ! -d "${DANALYZER_REPO}" ]; then
+    echo "danalyzer path invalid: ${DANALYZER_REPO}"
     exit 1
 fi
 

@@ -13,8 +13,12 @@ fi
 set -o nounset
 #set -o errexit
 
-HELPPATH="/home/dmcd2356/Projects/ISSTAC/repo/danhelper/"
-DANPATH="/home/dmcd2356/Projects/ISSTAC/repo/danalyzer/"
+# this just makes it easier to change users if the repos are organized the same as below.
+HOME="/home/dse"
+
+# this is the location of the danalyzer repo
+DANALYZER_REPO="${HOME}/Projects/isstac/danalyzer/"
+DANHELPER_REPO="${HOME}/Projects/isstac/danhelper/"
 
 # adds specified jar file to $CLASSPATH
 #
@@ -160,13 +164,13 @@ RAWFILE="${CURDIR}/testraw.txt"
 OUTFILE="${CURDIR}/testresult.txt"
 
 # verify danalyzer path
-if [ ! -d "${DANPATH}" ]; then
-    echo "danalyzer path invalid: ${DANPATH}"
+if [ ! -d "${DANALYZER_REPO}" ]; then
+    echo "danalyzer path invalid: ${DANALYZER_REPO}"
     exit 1
 fi
-if [[ ! -f "${DANPATH}/dist/danalyzer.jar" || ${INSTRUMENT} -eq 1 ]]; then
+if [[ ! -f "${DANALYZER_REPO}/dist/danalyzer.jar" || ${INSTRUMENT} -eq 1 ]]; then
     echo "- building danalyzer"
-    cd "${DANPATH}"
+    cd "${DANALYZER_REPO}"
     ant jar &> /dev/null
     if [[ $? -ne 0 ]]; then
         echo "ERROR: ant command failure"
@@ -217,26 +221,26 @@ if [[ ! -f "${FOLDER}/dist/${FOLDER}.jar" || ${INSTRUMENT} -eq 1 ]]; then
 fi
 
 # make sure agent lib has been built
-cd ${HELPPATH}
+cd ${DANHELPER_REPO}
 
 NOAGENT=0
-AGENTLIBDIR="${HELPPATH}src/"
-if [ ! -f "${HELPPATH}src/libdanhelper.so" ]; then
-    if [ ! -f "${HELPPATH}libdanhelper.so" ]; then
+AGENTLIBDIR="${DANHELPER_REPO}src/"
+if [ ! -f "${DANHELPER_REPO}src/libdanhelper.so" ]; then
+    if [ ! -f "${DANHELPER_REPO}libdanhelper.so" ]; then
         NOAGENT=1
     else
-        AGENTLIBDIR="${HELPPATH}"
+        AGENTLIBDIR="${DANHELPER_REPO}"
     fi
 fi
 
-# (this is run from HELPPATH)
+# (this is run from DANHELPER_REPO)
 if [[ ${NOAGENT} -ne 0 ]]; then
     echo "- building danhelper agent"
     make
-    if [ -f "${HELPPATH}src/libdanhelper.so" ]; then
-        mv ${HELPPATH}src/libdanhelper.so ${HELPPATH}libdanhelper.so
-        AGENTLIBDIR="${HELPPATH}"
-    elif [ -f "${HELPPATH}libdanhelper.so" ]; then
+    if [ -f "${DANHELPER_REPO}src/libdanhelper.so" ]; then
+        mv ${DANHELPER_REPO}src/libdanhelper.so ${DANHELPER_REPO}libdanhelper.so
+        AGENTLIBDIR="${DANHELPER_REPO}"
+    elif [ -f "${DANHELPER_REPO}libdanhelper.so" ]; then
         echo "ERROR: danhelper agent failed to build"
         exit_cleanup
         exit 1
@@ -263,20 +267,20 @@ cd "${CURDIR}/${TESTNAME}"
     add_to_classpath "${TESTNAME}-dan-ed.jar"
 
     # add the libraries required for danalyzed files
-    add_to_classpath "${DANPATH}lib/commons-io-2.5.jar"
-    add_to_classpath "${DANPATH}lib/asm-all-5.2.jar"
-    add_to_classpath "${DANPATH}lib/com.microsoft.z3.jar"
-#    add_to_classpath "${DANPATH}lib/jgraphx.jar"
+    add_to_classpath "${DANALYZER_REPO}lib/commons-io-2.5.jar"
+    add_to_classpath "${DANALYZER_REPO}lib/asm-all-5.2.jar"
+    add_to_classpath "${DANALYZER_REPO}lib/com.microsoft.z3.jar"
+#    add_to_classpath "${DANALYZER_REPO}lib/jgraphx.jar"
 
     # if not found or requested, danalyze the test program
     FOLDER="${TESTNAME}"
     if [[ ${INSTRUMENT} -eq 1 || ! -f ${FOLDER}-dan-ed.jar ]]; then
         # run danalyzer on the application jar to instrument it
         echo "- instrumenting ${FOLDER} for danalyzer"
-        java -cp ${CLASSPATH} -jar ${DANPATH}dist/danalyzer.jar ${TESTNAME}.jar
+        java -cp ${CLASSPATH} -jar ${DANALYZER_REPO}dist/danalyzer.jar ${TESTNAME}.jar
         if [[ $? -ne 0 ]]; then
             echo "ERROR: java command failure"
-            echo "java -cp ${CLASSPATH} -jar ${DANPATH}dist/danalyzer.jar ${TESTNAME}.jar"
+            echo "java -cp ${CLASSPATH} -jar ${DANALYZER_REPO}dist/danalyzer.jar ${TESTNAME}.jar"
             exit_cleanup
             exit 1
         fi
@@ -285,15 +289,15 @@ cd "${CURDIR}/${TESTNAME}"
     # setup classpath
     CLASSPATH=""
     add_to_classpath "${TESTNAME}-dan-ed.jar"
-    add_to_classpath "${DANPATH}lib/commons-io-2.5.jar"
-    add_to_classpath "${DANPATH}lib/asm-all-5.2.jar"
-    add_to_classpath "${DANPATH}lib/com.microsoft.z3.jar"
+    add_to_classpath "${DANALYZER_REPO}lib/commons-io-2.5.jar"
+    add_to_classpath "${DANALYZER_REPO}lib/asm-all-5.2.jar"
+    add_to_classpath "${DANALYZER_REPO}lib/com.microsoft.z3.jar"
     add_dir_to_classpath ""
     add_dir_to_classpath "lib"
 
     # run the instrumented code with the agent
     OPTIONS="-Xverify:none -Dsun.boot.library.path=$JAVA_HOME/bin:/usr/lib"
-    BOOTCLASSPATH="-Xbootclasspath/a:${DANPATH}dist/danalyzer.jar:${DANPATH}lib/com.microsoft.z3.jar"
+    BOOTCLASSPATH="-Xbootclasspath/a:${DANALYZER_REPO}dist/danalyzer.jar:${DANALYZER_REPO}lib/com.microsoft.z3.jar"
     AGENTPATH="-agentpath:${AGENTLIBDIR}libdanhelper.so"
 
     # run the test program and capture output to file

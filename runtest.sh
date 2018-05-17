@@ -257,7 +257,7 @@ cd "${CURDIR}/${TESTNAME}"
     echo "#! DANALYZER SYMBOLIC EXPRESSION LIST" > ${CFGFILE}
     echo "Thread:" >> ${CFGFILE}
     echo "DebugMode:      STDOUT" >> ${CFGFILE}
-    echo "DebugFlags:     AGENT, CALLS" >> ${CFGFILE}
+    echo "DebugFlags:     AGENT CALLS" >> ${CFGFILE}
     echo "TriggerAuto:    0" >> ${CFGFILE}
     echo "TriggerAnyMeth: 0" >> ${CFGFILE}
     echo "TriggerOnCall:  0" >> ${CFGFILE}

@@ -44,7 +44,7 @@ if [ ! -d "${DANALYZER_REPO}" ]; then
 fi
 
 build "danalyzer"
-build "Danparse"
+build "danparse"
 
 # rebuild the test programs and remove the instrumented versions
 build "SimpleTest"

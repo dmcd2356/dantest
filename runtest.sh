@@ -4,7 +4,7 @@
 # for each of the sub-projects.
 
 if [ -z ${JAVA_HOME} ]; then
-    JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+    export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 fi
 
 # these options help catch errors.
